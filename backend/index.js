@@ -3,6 +3,7 @@ import * as dotenv from "dotenv";
 import cors from "cors";
 import postRoutes from "./routes/postRoutes.js";
 import AIRoutes from "./routes/AIRoutes.js";
+import connectDB from "./mongodb/db.js";
 
 dotenv.config(); // this dotenv allows us to access our environment variables
 
@@ -23,5 +24,5 @@ const startServer = async () => {
     console.log("Server has been successfully started on http://localhost:8000");
   });
 };
-
+connectDB();
 startServer();
