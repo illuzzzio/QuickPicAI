@@ -1,14 +1,27 @@
-import express from "express"
+import express from "express";
 import * as dotenv from "dotenv";
 import cors from "cors";
+import postRoutes from "./routes/postRoutes.js";
+import AIRoutes from "./routes/AIRoutes.js";
 
 dotenv.config(); // this dotenv allows us to access our environment variables
 
 const app = express();
 
 app.use(cors()); // middleware 
-app.use(express.json({limit: '50mb' }));
+app.use(express.json({ limit: '50mb' }));
 
-app.get("/", async (req,res) =>{
-    res.send("Hello from QucikPic AI");
-})
+app.use("/api/v1/posts", postRoutes);
+app.use("/api/v1/ai", AIRoutes);
+
+app.get("/", async (req, res) => {
+  res.send("Hello from QuickPic AI");
+});
+
+const startServer = async () => {
+  app.listen(8000, () => {
+    console.log("Server has been successfully started on http://localhost:8000");
+  });
+};
+
+startServer();
