@@ -17,7 +17,8 @@ const CreatePost = () => {
   const [generatingImg, setGeneratingImg] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
+  const handleChange = (e) =>
+    setForm({ ...form, [e.target.name]: e.target.value });
 
   const handleSurpriseMe = () => {
     const randomPrompt = getRandomPrompt(form.prompt);
@@ -30,12 +31,8 @@ const CreatePost = () => {
         setGeneratingImg(true);
         const response = await fetch('http://localhost:8000/api/v1/ai', {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            prompt: form.prompt,
-          }),
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ prompt: form.prompt }),
         });
 
         const data = await response.json();
@@ -56,16 +53,12 @@ const CreatePost = () => {
     if (form.prompt && form.photo) {
       setLoading(true);
       try {
-        const response = await fetch('http://localhost:8000/api/v1/posts', {
+        await fetch('http://localhost:8000/api/v1/posts', {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ ...form }),
         });
 
-        await response.json();
-        alert('Success');
         navigate('/');
       } catch (err) {
         alert(err);
@@ -78,77 +71,92 @@ const CreatePost = () => {
   };
 
   return (
-    <section className="max-w-7xl mx-auto">
-      <div>
-        <h1 className="font-extrabold text-[#222328] text-[32px]">Create</h1>
-        <p className="mt-2 text-[#666e75] text-[14px] max-w-[500px]">Generate an imaginative image through DALL-E AI and share it with the community</p>
-      </div>
+    <section className="min-h-screen flex justify-center items-start bg-black px-6 py-14">
+      <div className="w-full max-w-4xl bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-10 shadow-[0_0_60px_rgba(247,181,0,0.15)]">
 
-      <form className="mt-16 max-w-3xl" onSubmit={handleSubmit}>
-        <div className="flex flex-col gap-5">
-          <FormField
-            labelName="Your Name"
-            type="text"
-            name="name"
-            placeholder="Ex., john doe"
-            value={form.name}
-            handleChange={handleChange}
-          />
+        {/* HEADER */}
+        <div className="mb-10 text-center">
+          <h1 className="text-4xl font-extrabold bg-gradient-to-b from-yellow-300 to-yellow-500 bg-clip-text text-transparent drop-shadow-[0_0_12px_rgba(247,181,0,0.35)]">
+            Create AI Art
+          </h1>
+          <p className="mt-3 text-gray-400 text-sm max-w-xl mx-auto">
+            Turn imagination into visuals using QuickPicAI and share them with the world
+          </p>
+        </div>
 
-          <FormField
-            labelName="Prompt"
-            type="text"
-            name="prompt"
-            placeholder="An Impressionist oil painting of sunflowers in a purple vase…"
-            value={form.prompt}
-            handleChange={handleChange}
-            isSurpriseMe
-            handleSurpriseMe={handleSurpriseMe}
-          />
+        {/* FORM */}
+        <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-8">
 
-          <div className="relative bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 w-64 p-3 h-64 flex justify-center items-center">
-            { form.photo ? (
+          {/* LEFT */}
+          <div className="flex flex-col gap-6">
+            <FormField
+              labelName="Your Name"
+              type="text"
+              name="name"
+              placeholder="John Doe"
+              value={form.name}
+              handleChange={handleChange}
+            />
+
+            <FormField
+              labelName="Prompt"
+              type="text"
+              name="prompt"
+              placeholder="A cyberpunk Indian city at night, ultra-realistic…"
+              value={form.prompt}
+              handleChange={handleChange}
+              isSurpriseMe
+              handleSurpriseMe={handleSurpriseMe}
+            />
+
+            <button
+              type="button"
+              onClick={generateImage}
+              className="relative overflow-hidden rounded-xl bg-gradient-to-r from-green-500 to-emerald-600 px-6 py-3 font-semibold text-white shadow-lg transition hover:scale-[1.03] hover:shadow-green-500/40"
+            >
+              {generatingImg ? 'Generating…' : 'Generate Image'}
+            </button>
+          </div>
+
+          {/* RIGHT */}
+          <div className="relative h-[320px] rounded-2xl border border-white/10 bg-black/40 flex items-center justify-center overflow-hidden">
+            {form.photo ? (
               <img
                 src={form.photo}
                 alt={form.prompt}
-                className="w-full h-full object-contain"
+                className="w-full h-full object-contain rounded-xl"
               />
             ) : (
               <img
                 src={preview}
                 alt="preview"
-                className="w-9/12 h-9/12 object-contain opacity-40"
+                className="w-3/4 opacity-30"
               />
             )}
 
             {generatingImg && (
-              <div className="absolute inset-0 z-0 flex justify-center items-center bg-[rgba(0,0,0,0.5)] rounded-lg">
+              <div className="absolute inset-0 flex items-center justify-center bg-black/60">
                 <Loader />
               </div>
             )}
           </div>
-        </div>
 
-        <div className="mt-5 flex gap-5">
-          <button
-            type="button"
-            onClick={generateImage}
-            className=" text-white bg-green-700 font-medium rounded-md text-sm w-full sm:w-auto px-5 py-2.5 text-center"
-          >
-            {generatingImg ? 'Generating...' : 'Generate'}
-          </button>
-        </div>
+          {/* FOOTER */}
+          <div className="md:col-span-2 text-center mt-4">
+            <p className="text-gray-400 text-sm mb-4">
+              Once your image is ready, share it with the QuickPicAI community ✨
+            </p>
 
-        <div className="mt-10">
-          <p className="mt-2 text-[#666e75] text-[14px]">** Once you have created the image you want, you can share it with others in the community **</p>
-          <button
-            type="submit"
-            className="mt-3 text-white bg-[#6469ff] font-medium rounded-md text-sm w-full sm:w-auto px-5 py-2.5 text-center"
-          >
-            {loading ? 'Sharing...' : 'Share with the Community'}
-          </button>
-        </div>
-      </form>
+            <button
+              type="submit"
+              className="rounded-xl bg-gradient-to-r from-yellow-400 to-orange-500 px-10 py-3 font-bold text-black shadow-lg transition hover:scale-[1.04] hover:shadow-yellow-400/40"
+            >
+              {loading ? 'Sharing…' : 'Share with the Community'}
+            </button>
+          </div>
+
+        </form>
+      </div>
     </section>
   );
 };
