@@ -29,7 +29,7 @@ const CreatePost = () => {
     if (form.prompt) {
       try {
         setGeneratingImg(true);
-        const response = await fetch('http://localhost:8000/api/v1/ai', {
+        const response = await fetch('https://quickpicai-1-helion.onrender.com/api/v1/ai', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ prompt: form.prompt }),
@@ -53,7 +53,7 @@ const CreatePost = () => {
     if (form.prompt && form.photo) {
       setLoading(true);
       try {
-        await fetch('http://localhost:8000/api/v1/posts', {
+        await fetch('https://quickpicai-1-helion.onrender.com/api/v1/posts', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ ...form }),
