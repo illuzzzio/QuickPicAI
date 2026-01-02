@@ -25,7 +25,7 @@ const FormField = ({
             type="button"
             onClick={handleSurpriseMe}
             className="text-xs font-semibold px-3 py-1 rounded-full
-                       bg-gradient-to-r from-pink-500 to-purple-600
+                       bg-gradient-to-r from-yellow-500 to-purple-600
                        text-white hover:opacity-90 transition"
           >
             Surprise me
@@ -44,7 +44,7 @@ const FormField = ({
         className="w-full p-3 rounded-xl bg-[#0f172a]
                    border border-[#1f2937]
                    text-white placeholder-gray-500
-                   focus:ring-2 focus:ring-indigo-500
+                   focus:ring-2 focus:ring-yellow-500
                    focus:outline-none transition"
       />
     </div>

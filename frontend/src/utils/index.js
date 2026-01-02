@@ -1,19 +1,15 @@
-// here i will be creating my reusable utility functions 
-import { surprise_ideas } from "../constants";
+import FileSaver from 'file-saver';
+import { surpriseMePrompts } from '../constants';
 
 export function getRandomPrompt(prompt) {
-  if (!surprise_ideas.length) return "";
+  const randomIndex = Math.floor(Math.random() * surpriseMePrompts.length);
+  const randomPrompt = surpriseMePrompts[randomIndex];
 
-  if (surprise_ideas.length === 1) {
-    return surprise_ideas[0];
-  }
-
-  let randomPrompt = prompt;
-
-  while (randomPrompt === prompt) {
-    const randomIndex = Math.floor(Math.random() * surprise_ideas.length);
-    randomPrompt = surprise_ideas[randomIndex];
-  }
+  if (randomPrompt === prompt) return getRandomPrompt(prompt);
 
   return randomPrompt;
+}
+
+export async function downloadImage(_id, photo) {
+  FileSaver.saveAs(photo, `download-${_id}.jpg`);
 }
