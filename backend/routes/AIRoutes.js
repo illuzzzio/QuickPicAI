@@ -4,7 +4,14 @@ import { InferenceClient } from "@huggingface/inference";
 
 dotenv.config();
 const router = express.Router();
-const client = new InferenceClient(process.env.HF_TOKEN);
+const client = process.env.HF_TOKEN ? new InferenceClient(process.env.HF_TOKEN) : null;
+
+export const getHfConfigError = () => {
+  if (!process.env.HF_TOKEN) {
+    return "Hugging Face token is missing. Set HF_TOKEN in your Render environment variables.";
+  }
+  return null;
+};
 
 // Best models list (in priority order)
 const models = [
@@ -21,8 +28,14 @@ router.post("/", async (req, res) => {
       return res.status(400).json({ error: "Prompt is required" });
     }
 
+    const hfConfigError = getHfConfigError();
+    if (hfConfigError) {
+      return res.status(500).json({ error: hfConfigError });
+    }
+
     let imageBlob = null;
     let usedModel = "";
+    let lastError = null;
 
     // Try each model until one succeeds
     for (const model of models) {
@@ -35,12 +48,16 @@ router.post("/", async (req, res) => {
         });
         break; // success — stop trying
       } catch (err) {
-        console.warn(`Model ${model} failed, trying next…`);
+        lastError = err;
+        console.warn(`Model ${model} failed, trying next…`, err.message);
       }
     }
 
     if (!imageBlob) {
-      return res.status(500).json({ error: "All models failed" });
+      return res.status(502).json({
+        error: "Image generation failed",
+        detail: lastError?.message || "All models failed"
+      });
     }
 
     const buffer = Buffer.from(await imageBlob.arrayBuffer());

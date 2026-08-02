@@ -35,10 +35,15 @@ const CreatePost = () => {
           body: JSON.stringify({ prompt: form.prompt }),
         });
 
-        const data = await response.json();
-        setForm({ ...form, photo: `data:image/jpeg;base64,${data.photo}` });
+        const data = await response.json().catch(() => null);
+
+        if (!response.ok || !data?.photo) {
+          throw new Error(data?.error || data?.detail || 'Image generation failed');
+        }
+
+        setForm((prev) => ({ ...prev, photo: `data:image/jpeg;base64,${data.photo}` }));
       } catch (err) {
-        alert(err);
+        alert(err.message || err);
       } finally {
         setGeneratingImg(false);
       }
