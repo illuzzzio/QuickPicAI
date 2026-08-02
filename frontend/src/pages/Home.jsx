@@ -33,12 +33,15 @@ const Home = () => {
         },
       });
 
-      if (response.ok) {
-        const result = await response.json();
-        setAllPosts(result.data.reverse());
+      const result = await response.json().catch(() => null);
+
+      if (!response.ok) {
+        throw new Error(result?.message || result?.error || 'Unable to load posts');
       }
+
+      setAllPosts(result.data.reverse());
     } catch (err) {
-      alert(err);
+      alert(err.message || err);
     } finally {
       setLoading(false);
     }

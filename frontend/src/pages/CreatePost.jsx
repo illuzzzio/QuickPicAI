@@ -58,15 +58,21 @@ const CreatePost = () => {
     if (form.prompt && form.photo) {
       setLoading(true);
       try {
-        await fetch('https://quickpicai-1-helion.onrender.com/api/v1/posts', {
+        const response = await fetch('https://quickpicai-1-helion.onrender.com/api/v1/posts', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ ...form }),
         });
 
+        const data = await response.json().catch(() => null);
+
+        if (!response.ok) {
+          throw new Error(data?.message || data?.error || 'Unable to share post');
+        }
+
         navigate('/');
       } catch (err) {
-        alert(err);
+        alert(err.message || err);
       } finally {
         setLoading(false);
       }

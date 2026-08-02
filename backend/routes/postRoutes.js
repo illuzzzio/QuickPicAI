@@ -7,6 +7,15 @@ dotenv.config(); // MUST be before using process.env
 
 const router = express.Router();
 
+const getMissingConfig = () => {
+  const missing = [];
+  if (!process.env.MONGO_URI) missing.push("MONGO_URI");
+  if (!process.env.CLOUDINARY_CLOUD_NAME) missing.push("CLOUDINARY_CLOUD_NAME");
+  if (!process.env.CLOUDINARY_API_KEY) missing.push("CLOUDINARY_API_KEY");
+  if (!process.env.CLOUDINARY_API_SECRET) missing.push("CLOUDINARY_API_SECRET");
+  return missing;
+};
+
 // Cloudinary configuration using process.env
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -16,12 +25,25 @@ cloudinary.config({
 
 // for getting all the posts //
 router.route("/").get(async (req, res) => {
+  const missingConfig = getMissingConfig();
+  if (missingConfig.length) {
+    return res.status(503).json({
+      success: false,
+      message: "Backend is not configured yet",
+      missingConfig,
+    });
+  }
+
   try {
     const posts = await Post.find({});
     res.status(200).json({ success: true, data: posts });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ success: false, message: "Fetching posts failed" });
+    res.status(503).json({
+      success: false,
+      message: "Fetching posts failed",
+      detail: error.message,
+    });
   }
 });
 
